@@ -1,0 +1,64 @@
+CREATE TABLE vocabulary_items (
+    vocabulary_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    word VARCHAR(100) NOT NULL,
+    language ENUM('English', 'German') NOT NULL,
+    translation VARCHAR(255),
+    definition TEXT,
+    part_of_speech VARCHAR(50),
+    date_added TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+);
+
+CREATE TABLE vocabulary_progress (
+    vocabulary_id INT NOT NULL,
+    user_id INT NOT NULL,
+    mastery_level INT DEFAULT 1,
+    times_reviewed INT DEFAULT 0,
+    last_reviewed TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    next_review TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (vocabulary_id, user_id),
+    FOREIGN KEY (vocabulary_id) REFERENCES vocabulary_items(vocabulary_id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+);
+
+CREATE TABLE vocabulary_categories (
+    category_id INT AUTO_INCREMENT PRIMARY KEY,
+    category_name VARCHAR(50) NOT NULL,
+    user_id INT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+);
+
+CREATE TABLE vocabulary_category_items (
+    vocabulary_id INT NOT NULL,
+    category_id INT NOT NULL,
+    PRIMARY KEY (vocabulary_id, category_id),
+    FOREIGN KEY (vocabulary_id) REFERENCES vocabulary_items(vocabulary_id) ON DELETE CASCADE,
+    FOREIGN KEY (category_id) REFERENCES vocabulary_categories(category_id) ON DELETE CASCADE
+);
+
+CREATE TABLE learning_settings (
+    user_id INT PRIMARY KEY,
+    daily_word_goal INT DEFAULT 10,
+    weekly_word_goal INT DEFAULT 50,
+    practice_reminder TINYINT(1) DEFAULT 1,
+    reminder_time TIME DEFAULT '18:00:00',
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+);
+
+CREATE TABLE appearance_settings (
+    user_id INT PRIMARY KEY,
+    theme VARCHAR(20) DEFAULT 'light',
+    font_size VARCHAR(10) DEFAULT 'medium',
+    high_contrast TINYINT(1) DEFAULT 0,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+);
+
+CREATE TABLE notification_settings (
+    user_id INT PRIMARY KEY,
+    email_notifications TINYINT(1) DEFAULT 1,
+    streak_reminders TINYINT(1) DEFAULT 1,
+    achievement_alerts TINYINT(1) DEFAULT 1,
+    learning_tips TINYINT(1) DEFAULT 1,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+);
